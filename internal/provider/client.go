@@ -33,14 +33,20 @@ func withUserAgent(userAgent string) option {
 }
 
 func newClient(baseURL string, token *string, opts ...option) (*client, error) {
+	if baseURL[len(baseURL)-1] != '/' {
+		baseURL += "/"
+	}
+
 	c := client{
 		baseURL:    baseURL,
 		token:      *token,
 		httpClient: http.DefaultClient,
 	}
+
 	for _, opt := range opts {
 		opt(&c)
 	}
+
 	return &c, nil
 }
 

@@ -44,7 +44,7 @@ func (p *ResumeProvider) Schema(ctx context.Context, req provider.SchemaRequest,
 		Attributes: map[string]schema.Attribute{
 			"endpoint": schema.StringAttribute{
 				MarkdownDescription: "Resume API Endpoint",
-				Optional:            false,
+				Required:            true,
 			},
 			//"token": schema.StringAttribute{
 			//	MarkdownDescription: "Resume API Token",
@@ -108,15 +108,11 @@ func (p *ResumeProvider) Configure(ctx context.Context, req provider.ConfigureRe
 }
 
 func (p *ResumeProvider) Resources(ctx context.Context) []func() resource.Resource {
-	return []func() resource.Resource{
-		NewExampleResource,
-	}
+	return []func() resource.Resource{}
 }
 
 func (p *ResumeProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{
-		NewExampleDataSource,
-	}
+	return []func() datasource.DataSource{}
 }
 
 func New(version string) func() provider.Provider {
