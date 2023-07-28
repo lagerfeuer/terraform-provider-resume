@@ -1,6 +1,6 @@
-module github.com/hashicorp/terraform-provider-scaffolding-framework
+module github.com/lagerfeuer/terraform-provider-resume
 
-go 1.19
+go 1.20
 
 require (
 	github.com/hashicorp/terraform-plugin-docs v0.16.0
@@ -8,6 +8,7 @@ require (
 	github.com/hashicorp/terraform-plugin-go v0.18.0
 	github.com/hashicorp/terraform-plugin-log v0.9.0
 	github.com/hashicorp/terraform-plugin-testing v1.4.0
+	github.com/lagerfeuer/terraform-provider-resume v0.0.0-20230727235355-702d738f14a6
 )
 
 require (

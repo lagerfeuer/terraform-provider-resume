@@ -1,3 +1,3 @@
-provider "scaffolding" {
-  # example configuration here
+provider "resume" {
+  endpoint = "https://localhost:3000"
 }
