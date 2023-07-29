@@ -8,6 +8,15 @@ build:
 install:
 	go install
 
+.PHONY: start-api
+start-api:
+	docker compose up -d
+	docker compose exec app rails db:create db:migrate db:seed
+
+.PHONY: stop-api
+stop-api:
+	docker compose down
+
 # Run acceptance tests
 .PHONY: testacc
 testacc:

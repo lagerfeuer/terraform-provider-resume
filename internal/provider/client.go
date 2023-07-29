@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"golang.org/x/net/context/ctxhttp"
 )
@@ -32,14 +33,12 @@ func withUserAgent(userAgent string) option {
 	}
 }
 
-func newClient(baseURL string, token *string, opts ...option) (*client, error) {
-	if baseURL[len(baseURL)-1] != '/' {
-		baseURL += "/"
-	}
+func newClient(baseURL, token string, opts ...option) (*client, error) {
+	baseURL = strings.TrimSuffix(baseURL, "/")
 
 	c := client{
 		baseURL:    baseURL,
-		token:      *token,
+		token:      token,
 		httpClient: http.DefaultClient,
 	}
 
@@ -71,10 +70,13 @@ func (c *client) do(ctx context.Context, method, path string, body io.Reader) (*
 	if err != nil {
 		return nil, err
 	}
+
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.token))
+
 	if c.userAgent != "" {
 		req.Header.Set("User-Agent", c.userAgent)
 	}
+
 	if method == http.MethodPost || method == http.MethodPatch {
 		req.Header.Set("Content-Type", "application/json")
 	}

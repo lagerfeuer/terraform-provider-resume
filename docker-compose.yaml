@@ -1,0 +1,28 @@
+version: "3.9"
+
+services:
+  app:
+    image: ghcr.io/lagerfeuer/resume-api:v8
+    environment:
+      RAILS_ENV: development
+      RESUME_API_DATABASE_USERNAME: app
+      RESUME_API_DATABASE_PASSWORD: letmein123
+      RESUME_API_DATABASE_HOST: db
+      RESUME_API_RUN_MIGRATIONS: true
+      SECRET_KEY_BASE: test
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: letmein123
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres-data:

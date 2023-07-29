@@ -7,6 +7,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/path"
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"os"
 
 	"github.com/hashicorp/terraform-plugin-framework/datasource"
@@ -30,6 +31,7 @@ type ResumeProvider struct {
 // ResumeProviderModel describes the provider data model.
 type ResumeProviderModel struct {
 	Endpoint types.String `tfsdk:"endpoint"`
+	Token    types.String `tfsdk:"token"`
 }
 
 func (p *ResumeProvider) Metadata(
@@ -39,27 +41,31 @@ func (p *ResumeProvider) Metadata(
 	resp.Version = p.version
 }
 
-func (p *ResumeProvider) Schema(ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse) {
+func (p *ResumeProvider) Schema(
+	ctx context.Context, req provider.SchemaRequest, resp *provider.SchemaResponse,
+) {
 	resp.Schema = schema.Schema{
 		Attributes: map[string]schema.Attribute{
 			"endpoint": schema.StringAttribute{
-				MarkdownDescription: "Resume API Endpoint",
-				Required:            true,
+				Description: "Resume API Endpoint",
+				Required:    true,
 			},
-			//"token": schema.StringAttribute{
-			//	MarkdownDescription: "Resume API Token",
-			//	Optional:            false,
-			//},
+			"token": schema.StringAttribute{
+				Description: "Resume API Token",
+				Required:    true,
+				Sensitive:   true,
+			},
 		},
 	}
 }
 
-func (p *ResumeProvider) Configure(ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse) {
+func (p *ResumeProvider) Configure(
+	ctx context.Context, req provider.ConfigureRequest, resp *provider.ConfigureResponse,
+) {
 	var config ResumeProviderModel
 
 	diags := req.Config.Get(ctx, &config)
 	resp.Diagnostics.Append(diags...)
-
 	if resp.Diagnostics.HasError() {
 		return
 	}
@@ -72,14 +78,27 @@ func (p *ResumeProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		)
 	}
 
+	if config.Token.IsUnknown() {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("token"),
+			"Unknown Token configuration",
+			"The provider cannot create a client with an unknown value.",
+		)
+	}
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	endpoint := os.Getenv("RESUME_ENDPOINT")
+	endpoint := os.Getenv("RESUME_API_ENDPOINT")
+	token := os.Getenv("RESUME_API_TOKEN")
 
 	if !config.Endpoint.IsNull() {
 		endpoint = config.Endpoint.ValueString()
+	}
+
+	if !config.Token.IsNull() {
+		token = config.Token.ValueString()
 	}
 
 	if endpoint == "" {
@@ -90,11 +109,24 @@ func (p *ResumeProvider) Configure(ctx context.Context, req provider.ConfigureRe
 		)
 	}
 
+	if token == "" {
+		resp.Diagnostics.AddAttributeError(
+			path.Root("token"),
+			"Missing Resume API Token",
+			"Cannot create the Resume client without a valid token.",
+		)
+	}
+
 	if resp.Diagnostics.HasError() {
 		return
 	}
 
-	client, err := newClient(endpoint, nil)
+	ctx = tflog.SetField(ctx, "resume_endpoint", endpoint)
+	ctx = tflog.SetField(ctx, "resume_token", token)
+	ctx = tflog.MaskFieldValuesWithFieldKeys(ctx, "resume_token")
+	tflog.Debug(ctx, "Creating new client for Resume API")
+
+	client, err := newClient(endpoint, token)
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Could not create client",
@@ -112,7 +144,9 @@ func (p *ResumeProvider) Resources(ctx context.Context) []func() resource.Resour
 }
 
 func (p *ResumeProvider) DataSources(ctx context.Context) []func() datasource.DataSource {
-	return []func() datasource.DataSource{}
+	return []func() datasource.DataSource{
+		NewInfoDataSource,
+	}
 }
 
 func New(version string) func() provider.Provider {

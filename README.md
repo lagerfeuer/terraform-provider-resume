@@ -50,7 +50,10 @@ To generate or update documentation, run `go generate`.
 In order to run the full suite of Acceptance tests, run `make testacc`.
 
 *Note:* Acceptance tests create real resources, and often cost money to run.
+But we will be running the acceptance tests against a local development deploy through `docker compose`.
 
 ```shell
+make start-api
 make testacc
+make stop-api
 ```
