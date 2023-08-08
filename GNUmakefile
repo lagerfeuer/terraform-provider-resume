@@ -8,6 +8,11 @@ build:
 install:
 	go install
 
+.PHONY: clean
+clean:
+	rm -rf ./$(BIN)
+
+# Local API
 .PHONY: start-api
 start-api:
 	docker compose up -d
@@ -21,8 +26,4 @@ stop-api:
 .PHONY: testacc
 testacc:
 	TF_ACC=1 go test ./... -v $(TESTARGS) -timeout 120m
-
-.PHONY: clean
-clean:
-	rm -rf ./$(BIN)
 
