@@ -5,11 +5,11 @@ package provider
 import (
 	"context"
 	"fmt"
+	"golang.org/x/net/context/ctxhttp"
 	"io"
+	"log"
 	"net/http"
 	"strings"
-
-	"golang.org/x/net/context/ctxhttp"
 )
 
 type client struct {
@@ -58,6 +58,8 @@ func (c *client) Post(ctx context.Context, path string, body io.Reader) (*http.R
 }
 
 func (c *client) Patch(ctx context.Context, path string, body io.Reader) (*http.Response, error) {
+	log.Print("XXX PATCH XXX")
+	log.Print(path)
 	return c.do(ctx, http.MethodPatch, path, body)
 }
 
@@ -66,7 +68,8 @@ func (c *client) Delete(ctx context.Context, path string) (*http.Response, error
 }
 
 func (c *client) do(ctx context.Context, method, path string, body io.Reader) (*http.Response, error) {
-	req, err := http.NewRequest(method, fmt.Sprintf("%s%s", c.baseURL, path), body)
+	url := fmt.Sprintf("%s%s", c.baseURL, path)
+	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, err
 	}
@@ -80,5 +83,7 @@ func (c *client) do(ctx context.Context, method, path string, body io.Reader) (*
 	if method == http.MethodPost || method == http.MethodPatch {
 		req.Header.Set("Content-Type", "application/json")
 	}
+
+	// TODO check for return code and return error if not in range 200-299
 	return ctxhttp.Do(ctx, c.httpClient, req)
 }

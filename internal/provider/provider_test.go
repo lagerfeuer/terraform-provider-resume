@@ -32,5 +32,5 @@ func testAccPreCheck(t *testing.T) {
 	// about the appropriate environment variables being set are common to see in a pre-check
 	// function.
 	// TODO check for environment variable RESUME_API_ENDPOINT and RESUME_API_TOKEN so we _could_
-	// run acceptance tests against the production endpoint.
+	// run acceptance tests against the production resumeEndpoint.
 }

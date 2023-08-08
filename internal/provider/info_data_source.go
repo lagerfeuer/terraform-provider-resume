@@ -90,7 +90,7 @@ func (d *infoDataSource) Read(
 ) {
 	var state infoDataSourceModel
 
-	r, err := d.client.Get(ctx, "/info")
+	httpResp, err := d.client.Get(ctx, "/info")
 	if err != nil {
 		resp.Diagnostics.AddError(
 			"Unable to read /info",
@@ -99,18 +99,18 @@ func (d *infoDataSource) Read(
 		return
 	}
 
-	if r.StatusCode != http.StatusOK {
+	if httpResp.StatusCode != http.StatusOK {
 		resp.Diagnostics.AddError(
 			"HTTP Error",
-			fmt.Sprintf("Expected HTTP status code %d, but got: %d", http.StatusOK, r.StatusCode),
+			fmt.Sprintf("Expected HTTP status code %d, but got: %d", http.StatusOK, httpResp.StatusCode),
 		)
 		return
 	}
 
-	body, err := io.ReadAll(r.Body)
+	body, err := io.ReadAll(httpResp.Body)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Unable to read /info response",
+			"Unable to read HTTP response body",
 			err.Error(),
 		)
 		return
@@ -120,7 +120,7 @@ func (d *infoDataSource) Read(
 	err = json.Unmarshal(body, &data)
 	if err != nil {
 		resp.Diagnostics.AddError(
-			"Unable to parse /info response",
+			"Unable to parse HTTP response body",
 			err.Error(),
 		)
 		return
