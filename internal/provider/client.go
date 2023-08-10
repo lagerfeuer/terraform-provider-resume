@@ -21,6 +21,7 @@ type client struct {
 
 type option func(c *client)
 
+//nolint:unused
 func withHTTPClient(httpClient *http.Client) option {
 	return func(c *client) {
 		c.httpClient = httpClient
@@ -33,7 +34,7 @@ func withUserAgent(userAgent string) option {
 	}
 }
 
-func newClient(baseURL, token string, opts ...option) (*client, error) {
+func newClient(baseURL, token string, opts ...option) *client {
 	baseURL = strings.TrimSuffix(baseURL, "/")
 
 	c := client{
@@ -46,7 +47,7 @@ func newClient(baseURL, token string, opts ...option) (*client, error) {
 		opt(&c)
 	}
 
-	return &c, nil
+	return &c
 }
 
 func (c *client) Get(ctx context.Context, path string) (*http.Response, error) {

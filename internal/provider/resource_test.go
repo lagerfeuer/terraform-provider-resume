@@ -12,6 +12,7 @@ import (
 
 // Source: https://github.com/BetterStackHQ/terraform-provider-better-uptime/blob/master/internal/provider/resource_test.go
 
+//nolint:unused
 func newResourceServer(t *testing.T, baseRequestURI, id string, fieldsNotReturnedFromApi ...string) *httptest.Server {
 	var data atomic.Value
 	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -51,6 +52,7 @@ func newResourceServer(t *testing.T, baseRequestURI, id string, fieldsNotReturne
 				t.Fatal(err)
 			}
 			patch := make(map[string]interface{})
+			//nolint:forcetypeassert
 			if err = json.Unmarshal(data.Load().([]byte), &patch); err != nil {
 				t.Fatal(err)
 			}

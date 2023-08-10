@@ -5,7 +5,6 @@ package provider
 
 import (
 	"context"
-	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/path"
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"os"
@@ -126,14 +125,14 @@ func (p *ResumeProvider) Configure(
 	ctx = tflog.MaskFieldValuesWithFieldKeys(ctx, "resume_token")
 	tflog.Debug(ctx, "Creating new client for Resume API")
 
-	client, err := newClient(endpoint, token, withUserAgent("Resume Provider"))
-	if err != nil {
-		resp.Diagnostics.AddError(
-			"Could not create client",
-			fmt.Sprintf("Error while creating Resume API client: %v", err),
-		)
-		return
-	}
+	client := newClient(endpoint, token, withUserAgent("Resume Provider"))
+	//if err != nil {
+	//	resp.Diagnostics.AddError(
+	//		"Could not create client",
+	//		fmt.Sprintf("Error while creating Resume API client: %v", err),
+	//	)
+	//	return
+	//}
 
 	resp.DataSourceData = client
 	resp.ResourceData = client
