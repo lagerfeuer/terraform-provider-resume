@@ -8,6 +8,10 @@ build:
 install:
 	go install
 
+.PHONY: generate
+generate:
+	go generate ./...
+
 .PHONY: clean
 clean:
 	rm -rf ./$(BIN)

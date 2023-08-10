@@ -8,7 +8,7 @@ terraform {
 
 provider "resume" {
   endpoint = "http://localhost:3000"
-  token = "test"
+  token    = "test"
 }
 
 data "resume_info" "this" {}
