@@ -4,19 +4,24 @@
 package provider
 
 import (
-	"testing"
-
+	"fmt"
 	"github.com/hashicorp/terraform-plugin-framework/providerserver"
 	"github.com/hashicorp/terraform-plugin-go/tfprotov6"
+	"os"
+	"testing"
 )
 
-const (
-	providerConfig = `
+const providerConfigTemplate = `
 provider "resume" {
-  endpoint = "http://localhost:3000"
-  token = "test"
+  endpoint = "%s"
+  token = "%s"
 }
 `
+
+var providerConfig = fmt.Sprintf(
+	providerConfigTemplate,
+	os.Getenv("RESUME_API_ENDPOINT"),
+	os.Getenv("RESUME_API_TOKEN"),
 )
 
 // testAccProtoV6ProviderFactories are used to instantiate a provider during
@@ -28,9 +33,10 @@ var testAccProtoV6ProviderFactories = map[string]func() (tfprotov6.ProviderServe
 }
 
 func testAccPreCheck(t *testing.T) {
-	// You can add code here to run prior to any test case execution, for example assertions
-	// about the appropriate environment variables being set are common to see in a pre-check
-	// function.
-	// TODO check for environment variable RESUME_API_ENDPOINT and RESUME_API_TOKEN so we _could_
-	// run acceptance tests against the production endpoint.
+	if v := os.Getenv("RESUME_API_ENDPOINT"); v == "" {
+		t.Fatal("RESUME_API_ENDPOINT must be set for acceptance tests")
+	}
+	if v := os.Getenv("RESUME_API_TOKEN"); v == "" {
+		t.Fatal("RESUME_API_TOKEN must be set for acceptance tests")
+	}
 }

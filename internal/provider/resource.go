@@ -13,6 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 )
 
+//nolint:unused
 func resourceCreate(ctx context.Context, meta interface{}, url string, in, out interface{}) diag.Diagnostics {
 	reqBody, err := json.Marshal(&in)
 	if err != nil {
@@ -42,6 +43,7 @@ func resourceCreate(ctx context.Context, meta interface{}, url string, in, out i
 	return nil
 }
 
+//nolint:unused
 func resourceRead(ctx context.Context, meta interface{}, url string, out interface{}) (derr diag.Diagnostics, ok bool) {
 	log.Printf("GET %s", url)
 	res, err := meta.(*client).Get(ctx, url)
@@ -71,6 +73,7 @@ func resourceRead(ctx context.Context, meta interface{}, url string, out interfa
 	return nil, true
 }
 
+//nolint:unused
 func resourceUpdate(ctx context.Context, meta interface{}, url string, req interface{}, out interface{}) diag.Diagnostics {
 	reqBody, err := json.Marshal(&req)
 	if err != nil {
@@ -96,6 +99,8 @@ func resourceUpdate(ctx context.Context, meta interface{}, url string, req inter
 	}
 	return nil
 }
+
+//nolint:unused
 func resourceDelete(ctx context.Context, meta interface{}, url string) diag.Diagnostics {
 	log.Printf("DELETE %s", url)
 	res, err := meta.(*client).Delete(ctx, url)

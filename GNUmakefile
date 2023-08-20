@@ -8,6 +8,15 @@ build:
 install:
 	go install
 
+.PHONY: generate
+generate:
+	go generate ./...
+
+.PHONY: clean
+clean:
+	rm -rf ./$(BIN)
+
+# Local API
 .PHONY: start-api
 start-api:
 	docker compose up -d
@@ -20,9 +29,6 @@ stop-api:
 # Run acceptance tests
 .PHONY: testacc
 testacc:
-	TF_ACC=1 go test ./... -v $(TESTARGS) -timeout 120m
-
-.PHONY: clean
-clean:
-	rm -rf ./$(BIN)
+	TF_ACC=1 RESUME_API_ENDPOINT='http://localhost:3000' RESUME_API_TOKEN='test' \
+	go test ./... -v $(TESTARGS) -timeout 120m
 
