@@ -29,5 +29,6 @@ stop-api:
 # Run acceptance tests
 .PHONY: testacc
 testacc:
-	TF_ACC=1 go test ./... -v $(TESTARGS) -timeout 120m
+	TF_ACC=1 RESUME_API_ENDPOINT='http://localhost:3000' RESUME_API_TOKEN='test' \
+	go test ./... -v $(TESTARGS) -timeout 120m
 

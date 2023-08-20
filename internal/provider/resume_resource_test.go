@@ -11,10 +11,12 @@ var (
 
 func TestAccResumeResource(t *testing.T) {
 	resource.Test(t, resource.TestCase{
+		PreCheck:                 func() { testAccPreCheck(t) },
 		ProtoV6ProviderFactories: testAccProtoV6ProviderFactories,
 		Steps: []resource.TestStep{
 			// Create and Read
 			{
+
 				Config: providerConfig + `
 resource "resume_resume" "test" {
 	name = "Test McTester"
